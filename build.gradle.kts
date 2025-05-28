@@ -27,7 +27,7 @@ tasks.withType<JavaCompile> {
 
 application {
     mainModule.set("com.example.tokenmanager")
-    mainClass.set("com.example.tokenmanager.HelloApplication")
+    mainClass.set("com.example.tokenmanager.MainApp")
 }
 
 javafx {
@@ -45,6 +45,9 @@ dependencies {
     }
     implementation("org.kordamp.ikonli:ikonli-javafx:12.3.1")
     implementation("org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.80")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.80")
+    implementation("com.dustinredmond.fxtrayicon:FXTrayIcon:4.2.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
