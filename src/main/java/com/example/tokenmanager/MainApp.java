@@ -1,6 +1,7 @@
 package com.example.tokenmanager;
 
 import com.dustinredmond.fxtrayicon.FXTrayIcon;
+import com.example.tokenmanager.configs.AppConfig;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -10,21 +11,23 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class MainApp extends Application {
     private Stage primaryStage;
     private FXTrayIcon systemTray;
-    public static String styleSheet = String.valueOf(MainApp.class.getResource("style.css"));
-    public static URL imageUrl = MainApp.class.getResource("tray.png");
+    private final AppConfig appConfig = AppConfig.getInstance();
 
     @Override
     public void start(Stage stage) throws IOException {
         this.primaryStage = stage;
+        appConfig.addProperty("url.stylesheet", String.valueOf(MainApp.class.getResource("style.css")));
+        appConfig.addProperty("url.image", String.valueOf(MainApp.class.getResource("tray.png")));
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        scene.getStylesheets().add(styleSheet);
+        scene.getStylesheets().add(appConfig.getProperty("url.stylesheet"));
 
         primaryStage.setTitle("Token Manager");
         primaryStage.setScene(scene);
@@ -43,9 +46,9 @@ public class MainApp extends Application {
         primaryStage.hide();
     }
 
-    //TODO: Systemtray problem with java17
-    private void systemTray() {
-        systemTray = new FXTrayIcon(primaryStage, imageUrl);
+    //TODO: System tray problem with java17
+    private void systemTray() throws MalformedURLException {
+        systemTray = new FXTrayIcon(primaryStage, new URL(appConfig.getProperty("url.image")));
         systemTray.setApplicationTitle("Token Manager");
 
         MenuItem open = new MenuItem("Open");
