@@ -9,6 +9,8 @@ module com.example.tokenmanager {
     requires org.kordamp.bootstrapfx.core;
     requires com.dustinredmond.fxtrayicon;
     requires jdk.compiler;
+    requires org.bouncycastle.provider;
+    requires org.bouncycastle.pkix;
 
     opens com.example.tokenmanager to javafx.fxml;
     exports com.example.tokenmanager;
