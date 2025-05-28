@@ -7,7 +7,12 @@ module com.example.tokenmanager {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
+    requires com.dustinredmond.fxtrayicon;
+    requires jdk.compiler;
 
     opens com.example.tokenmanager to javafx.fxml;
     exports com.example.tokenmanager;
+
+    opens com.example.tokenmanager.controllers to javafx.fxml;
+    exports com.example.tokenmanager.controllers;
 }
