@@ -1,4 +1,4 @@
-package com.masofino.birp.tokenmanager.ui;
+package com.example.tokenmanager.ui;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;

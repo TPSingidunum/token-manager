@@ -1,4 +1,4 @@
-package com.masofino.birp.tokenmanager.ui;
+package com.example.tokenmanager.ui;
 
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Optional;

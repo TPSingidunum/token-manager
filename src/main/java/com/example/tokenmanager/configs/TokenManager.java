@@ -5,6 +5,7 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -12,6 +13,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -25,6 +27,10 @@ import java.util.List;
 public class TokenManager {
     private final AppConfig appConfig = AppConfig.getInstance();
     private List<Token> tokens = new ArrayList<>();
+
+    public TokenManager() {
+        loadTokens();
+    }
 
     private void loadTokens() {
         try {
@@ -47,7 +53,7 @@ public class TokenManager {
         return tokens;
     }
 
-    private Token generateToken(String name, SecureRandom random, String pin) throws IOException, NoSuchAlgorithmException, OperatorCreationException, NoSuchPaddingException, IllegalBlockSizeException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+    public Token generateToken(String name, SecureRandom random, String pin) throws IOException, NoSuchAlgorithmException, OperatorCreationException, NoSuchPaddingException, IllegalBlockSizeException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         Path tokenLocation = appConfig.getTokensStoragePath().resolve(name);
         Files.createDirectories(tokenLocation);
 
@@ -82,9 +88,10 @@ public class TokenManager {
         byte[] salt = new byte[16];
         new SecureRandom().nextBytes(salt);
 
-        PBEKeySpec spec = new PBEKeySpec(pin,salt, 65525, 256);
-        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("AES");
-        SecretKey key = secretKeyFactory.generateSecret(spec);
+        PBEKeySpec spec = new PBEKeySpec(pin, salt, 65536, 256);
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        SecretKey baseKey = secretKeyFactory.generateSecret(spec);
+        SecretKey key = new SecretKeySpec(baseKey.getEncoded(), "AES");
 
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -97,7 +104,8 @@ public class TokenManager {
         return result;
     }
 
-    private byte[] decrypt(Token token, char[] pin) throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException {
+    public byte[] decrypt(Token token, char[] pin) throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException {
+        Security.addProvider(new BouncyCastleProvider());
         byte[] data = Files.readAllBytes(token.getPrivateKeyPath());
 
         byte[] salt = new byte[16];
@@ -106,9 +114,10 @@ public class TokenManager {
         byte[] encryptedBytes = new byte[data.length - salt.length];
         System.arraycopy(data, salt.length, encryptedBytes, 0, encryptedBytes.length);
 
-        PBEKeySpec spec = new PBEKeySpec(pin, salt, 65525, 256);
-        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("AES");
-        SecretKey key = secretKeyFactory.generateSecret(spec);
+        PBEKeySpec spec = new PBEKeySpec(pin, salt, 65536, 256);
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        SecretKey baseKey = secretKeyFactory.generateSecret(spec);
+        SecretKey key = new SecretKeySpec(baseKey.getEncoded(), "AES");
 
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, key);

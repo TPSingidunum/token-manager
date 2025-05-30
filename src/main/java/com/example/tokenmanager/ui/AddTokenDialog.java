@@ -1,8 +1,7 @@
-package com.masofino.birp.tokenmanager.ui;
+package com.example.tokenmanager.ui;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
