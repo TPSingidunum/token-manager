@@ -43,6 +43,10 @@ public class TokenManager {
         }
     }
 
+    public List<Token> getTokens() {
+        return tokens;
+    }
+
     private Token generateToken(String name, SecureRandom random, String pin) throws IOException, NoSuchAlgorithmException, OperatorCreationException, NoSuchPaddingException, IllegalBlockSizeException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         Path tokenLocation = appConfig.getTokensStoragePath().resolve(name);
         Files.createDirectories(tokenLocation);

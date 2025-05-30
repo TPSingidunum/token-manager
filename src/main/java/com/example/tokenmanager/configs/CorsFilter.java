@@ -1,4 +1,4 @@
-package com.masofino.birp.tokenmanager.configs.properties;
+package com.example.tokenmanager.configs;
 
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;

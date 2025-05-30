@@ -11,6 +11,7 @@ module com.example.tokenmanager {
     requires jdk.compiler;
     requires org.bouncycastle.provider;
     requires org.bouncycastle.pkix;
+    requires jdk.httpserver;
 
     opens com.example.tokenmanager to javafx.fxml;
     exports com.example.tokenmanager;
