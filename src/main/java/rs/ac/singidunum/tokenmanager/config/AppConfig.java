@@ -58,6 +58,11 @@ public class AppConfig {
         return properties.getProperty(name);
     }
 
+    public int getServerPort() {
+        String port = properties.getProperty(SERVER_PORT);
+        return Integer.parseInt(port);
+    }
+
     public void setProperty(String name, String value) {
         properties.setProperty(name, value);
     }

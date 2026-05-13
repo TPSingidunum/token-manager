@@ -1,10 +1,13 @@
 package rs.ac.singidunum.tokenmanager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import rs.ac.singidunum.tokenmanager.config.AppConfig;
+import rs.ac.singidunum.tokenmanager.config.HttpApiServer;
+import rs.ac.singidunum.tokenmanager.dtos.HealthResponse;
 
 import java.io.IOException;
 
@@ -14,11 +17,10 @@ public class App extends Application {
 
         // Load Config
         AppConfig appConfig = AppConfig.getInstance();
-        System.out.println("Server port: " + appConfig.getProperty(AppConfig.SERVER_PORT));
-
 
         // Start HTTP Server
-
+        HttpApiServer server = new HttpApiServer(appConfig);
+        server.start();
 
         // Building the UI and Display
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("main-view.fxml"));

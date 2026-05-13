@@ -10,9 +10,13 @@ module rs.ac.singidunum.tokenmanager {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires jdk.httpserver;
+    requires java.net.http;
+    requires com.fasterxml.jackson.databind;
 
     opens rs.ac.singidunum.tokenmanager to javafx.fxml;
     exports rs.ac.singidunum.tokenmanager;
     exports rs.ac.singidunum.tokenmanager.controllers;
+    exports rs.ac.singidunum.tokenmanager.dtos;
     opens rs.ac.singidunum.tokenmanager.controllers to javafx.fxml;
 }
