@@ -16,11 +16,10 @@ public class HttpApiServer {
     private AppConfig appConfig;
     // private TokenService tokenService;
     private HttpServer server;
-    private ObjectMapper objectMapper;
+    private CorsFilter corsFilter;
 
     public HttpApiServer(AppConfig appConfig) {
         this.appConfig = appConfig;
-        this.objectMapper = new ObjectMapper();
     }
 
     public void start() {
@@ -28,13 +27,14 @@ public class HttpApiServer {
             server = HttpServer.create(
                     new InetSocketAddress(appConfig.getServerPort()), 0
             );
+            corsFilter = new CorsFilter();
         } catch (IOException e) {
             System.out.println("Server start failed");
             throw new RuntimeException(e);
         }
 
         // Registracija Endpoint-ova
-        server.createContext("/api/health", this::handleHealth);
+        server.createContext("/api/health", this::handleHealth).getFilters().add(corsFilter);
 
         // Pokretanje servisa
         server.setExecutor(Executors.newFixedThreadPool(2));
