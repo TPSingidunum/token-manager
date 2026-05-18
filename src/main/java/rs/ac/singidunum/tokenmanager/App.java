@@ -23,10 +23,9 @@ public class App extends Application {
 
         // Initialize TokenService
         TokenService tokenService = new TokenService(appConfig);
-        tokenService.listAllTokens();
 
         // Start HTTP Server
-        HttpApiServer server = new HttpApiServer(appConfig);
+        HttpApiServer server = new HttpApiServer(appConfig, tokenService);
         server.start();
 
         // Building the UI and Display

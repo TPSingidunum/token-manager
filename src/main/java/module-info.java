@@ -26,4 +26,6 @@ module rs.ac.singidunum.tokenmanager {
     opens rs.ac.singidunum.tokenmanager.controllers to javafx.fxml;
     opens rs.ac.singidunum.tokenmanager.services to javafx.fxml;
     opens rs.ac.singidunum.tokenmanager.dtos to javafx.fxml;
+
+    exports rs.ac.singidunum.tokenmanager.entities to com.fasterxml.jackson.databind;
 }

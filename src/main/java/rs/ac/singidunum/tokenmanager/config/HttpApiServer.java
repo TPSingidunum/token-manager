@@ -1,25 +1,30 @@
 package rs.ac.singidunum.tokenmanager.config;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import rs.ac.singidunum.tokenmanager.dtos.ErrorResponse;
 import rs.ac.singidunum.tokenmanager.dtos.HealthResponse;
+import rs.ac.singidunum.tokenmanager.entities.Token;
+import rs.ac.singidunum.tokenmanager.services.TokenService;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 public class HttpApiServer {
     private AppConfig appConfig;
-    // private TokenService tokenService;
+    private TokenService tokenService;
     private HttpServer server;
     private CorsFilter corsFilter;
 
-    public HttpApiServer(AppConfig appConfig) {
+    public HttpApiServer(AppConfig appConfig, TokenService tokenService) {
         this.appConfig = appConfig;
+        this.tokenService = tokenService;
     }
 
     public void start() {
@@ -35,6 +40,7 @@ public class HttpApiServer {
 
         // Registracija Endpoint-ova
         server.createContext("/api/health", this::handleHealth).getFilters().add(corsFilter);
+        server.createContext("/api/tokens", this::handleTokenList).getFilters().add(corsFilter);
 
         // Pokretanje servisa
         server.setExecutor(Executors.newFixedThreadPool(2));
@@ -43,9 +49,22 @@ public class HttpApiServer {
         System.out.println("Server started on port " + server.getAddress().getPort());
     }
 
+    private void handleTokenList(HttpExchange he) throws IOException {
+
+        if(!he.getRequestMethod().equals("GET")) {
+            ErrorResponse error = new ErrorResponse("Method not supported");
+            sendResponse(he, 405, error.convertToJson());
+            return;
+        }
+
+        String response = new ObjectMapper().writerFor(new TypeReference<List<Token>>() {})
+                .writeValueAsString(tokenService.getTokens());
+
+        sendResponse(he, 200, response);
+    }
+
     private void handleHealth(HttpExchange he) throws IOException {
         // Logika funkcije
-        System.out.println("Server received health request");
 
         if(!he.getRequestMethod().equals("GET")) {
             ErrorResponse error = new ErrorResponse("Method not supported");

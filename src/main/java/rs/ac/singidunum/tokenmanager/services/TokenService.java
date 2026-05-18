@@ -32,10 +32,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class TokenService {
     private AppConfig appConfig;
@@ -55,6 +52,10 @@ public class TokenService {
         for (Token token : tokens) {
             System.out.println(token.toString());
         }
+    }
+
+    public List<Token> getTokens() {
+        return tokens;
     }
 
     private void loadLocalTokens() {
