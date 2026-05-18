@@ -13,6 +13,8 @@ module rs.ac.singidunum.tokenmanager {
     requires jdk.httpserver;
     requires java.net.http;
     requires com.fasterxml.jackson.databind;
+    requires org.bouncycastle.pkix;
+    requires org.bouncycastle.provider;
 
     opens rs.ac.singidunum.tokenmanager to javafx.fxml;
     exports rs.ac.singidunum.tokenmanager;

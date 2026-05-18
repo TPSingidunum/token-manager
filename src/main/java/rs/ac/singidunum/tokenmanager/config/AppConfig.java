@@ -11,10 +11,12 @@ public class AppConfig {
     // Properties Config
     private static final String CONFIG_FILE = "token-manager.properties";
     public static final String STORAGE_KEY_PATH = "storage.key.path";
+    public static final String TOKEN_DURATION = "token.key.duration";
     public static final String SERVER_PORT = "server.port";
 
     // Properties inital Values
     private static final String STORAGE_KEY_PATH_VALUE = "tokens";
+    private static final int TOKEN_DURATION_VALUE = 365;
     private static final int SERVER_PORT_VALUE = 8000;
 
     // Data
@@ -50,6 +52,7 @@ public class AppConfig {
     private void createDefaults() {
         properties.setProperty(STORAGE_KEY_PATH, STORAGE_KEY_PATH_VALUE);
         properties.setProperty(SERVER_PORT, String.valueOf(SERVER_PORT_VALUE));
+        properties.setProperty(TOKEN_DURATION, String.valueOf(TOKEN_DURATION_VALUE));
 
         saveConfig();
     }
