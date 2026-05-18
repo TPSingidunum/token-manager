@@ -41,6 +41,7 @@ public class HttpApiServer {
         // Registracija Endpoint-ova
         server.createContext("/api/health", this::handleHealth).getFilters().add(corsFilter);
         server.createContext("/api/tokens", this::handleTokenList).getFilters().add(corsFilter);
+        server.createContext("/api/public-key/", this::handleGetPublicKey).getFilters().add(corsFilter);
 
         // Pokretanje servisa
         server.setExecutor(Executors.newFixedThreadPool(2));
@@ -49,37 +50,56 @@ public class HttpApiServer {
         System.out.println("Server started on port " + server.getAddress().getPort());
     }
 
+    private void handleGetPublicKey(HttpExchange he) throws IOException {
+        String[] parts = he.getRequestURI().getPath().split("/");
+        String keyId = parts[parts.length - 1];
+        String publicKeyPem = tokenService.getPublicKeyPemByKeyId(keyId);
+
+        sendResponsePlain(he, 200, publicKeyPem);
+    }
+
     private void handleTokenList(HttpExchange he) throws IOException {
 
         if(!he.getRequestMethod().equals("GET")) {
             ErrorResponse error = new ErrorResponse("Method not supported");
-            sendResponse(he, 405, error.convertToJson());
+            sendResponseJson(he, 405, error.convertToJson());
             return;
         }
 
         String response = new ObjectMapper().writerFor(new TypeReference<List<Token>>() {})
                 .writeValueAsString(tokenService.getTokens());
 
-        sendResponse(he, 200, response);
+        sendResponseJson(he, 200, response);
     }
 
     private void handleHealth(HttpExchange he) throws IOException {
-        // Logika funkcije
 
         if(!he.getRequestMethod().equals("GET")) {
             ErrorResponse error = new ErrorResponse("Method not supported");
-            sendResponse(he, 405, error.convertToJson());
+            sendResponseJson(he, 405, error.convertToJson());
             return;
         }
 
         HealthResponse response = new HealthResponse("Alive");
-        sendResponse(he, 200, response.convertToJson());
+        sendResponseJson(he, 200, response.convertToJson());
     }
 
-    private void sendResponse(HttpExchange he, int status, String payload) throws IOException {
+    private void sendResponseJson(HttpExchange he, int status, String payload) throws IOException {
         byte[] body =  payload.getBytes(StandardCharsets.UTF_8);
 
         he.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+        he.sendResponseHeaders(status, body.length);
+
+        try (OutputStream os = he.getResponseBody()) {
+            os.write(body);
+            os.flush();
+        }
+    }
+
+    private void sendResponsePlain(HttpExchange he, int status, String payload) throws IOException {
+        byte[] body =  payload.getBytes(StandardCharsets.UTF_8);
+
+        he.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
         he.sendResponseHeaders(status, body.length);
 
         try (OutputStream os = he.getResponseBody()) {

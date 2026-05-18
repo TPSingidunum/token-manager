@@ -20,9 +20,7 @@ import rs.ac.singidunum.tokenmanager.entities.Token;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -177,5 +175,28 @@ public class TokenService {
         }
 
         return null;
+    }
+
+    public String getPublicKeyPemByKeyId(String keyId) {
+        Optional<Token> exists = tokens.stream()
+                .filter(t -> t.getKeyId().equals(keyId))
+                .findFirst();
+
+        if (exists.isEmpty()) {
+            System.out.println("Token with params:  " + keyId + " not found");
+            return null;
+        }
+
+        X509Certificate cert = readCertificatePem(exists.get().getCertificatePath());
+        PublicKey publicKey = cert.getPublicKey();
+        StringWriter sw = new StringWriter();
+
+        try(JcaPEMWriter pw = new JcaPEMWriter(sw)) {
+            pw.writeObject(publicKey);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return sw.toString();
     }
 }
