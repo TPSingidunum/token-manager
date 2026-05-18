@@ -17,6 +17,10 @@ import rs.ac.singidunum.tokenmanager.config.AppConfig;
 import rs.ac.singidunum.tokenmanager.entities.DnProperties;
 import rs.ac.singidunum.tokenmanager.entities.Token;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -24,9 +28,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -41,9 +47,43 @@ public class TokenService {
 
     public TokenService(AppConfig appConfig) {
         this.appConfig = appConfig;
+        this.tokens = new ArrayList<>();
+        loadLocalTokens();
    }
 
-    public void generateLocalToken(String name) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, NoSuchProviderException {
+    public void listAllTokens() {
+        for (Token token : tokens) {
+            System.out.println(token.toString());
+        }
+    }
+
+    private void loadLocalTokens() {
+        Path localTokenLocation = Path.of(appConfig.getProperty("storage.key.path"));
+
+        try (var dirs = Files.list(localTokenLocation)) {
+            dirs.filter(Files::isDirectory).forEach(this::load);
+
+        } catch (IOException e) {
+            System.out.println("Error while reading local tokens: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    // @NotNull
+    private void load(Path path) {
+        Path certPath = path.resolve("cert.pem");
+        Path keyPath = path.resolve("key.pem");
+
+        if (Files.isReadable(certPath) && Files.isReadable(keyPath)) {
+            X509Certificate cert = readCertificatePem(certPath);
+            String name = getCommonName(cert);
+            String keyId = path.getFileName().toString();
+            Token token = new Token(keyId, name, Token.TOKEN_TYPE.LOCAL, certPath, keyPath);
+            tokens.add(token);
+        }
+    }
+
+    public Token generateLocalToken(String name) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, NoSuchProviderException {
         String keyId = UUID.randomUUID().toString();
         Path tokenLocation = Path.of(appConfig.getProperty("storage.key.path")).resolve(keyId);
         Files.createDirectories(tokenLocation);
@@ -63,6 +103,8 @@ public class TokenService {
         writePem(keyPath, tokenKP.getPrivate());
 
         System.out.println("Token with params:  " + name + ". Has been successfully created");
+
+        return token;
     }
 
     public X509Certificate generateCertificate(KeyPair kp, String name) throws NoSuchAlgorithmException, CertIOException, OperatorCreationException, CertificateException {
@@ -106,5 +148,33 @@ public class TokenService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public X509Certificate readCertificatePem(Path target) {
+        try(FileInputStream fis = new FileInputStream(target.toFile())) {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
+
+            return (X509Certificate) cf.generateCertificate(fis);
+        } catch (IOException | CertificateException | NoSuchProviderException e) {
+            System.out.println("Error while reading certificate: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getCommonName(X509Certificate cert) {
+        String dn = cert.getSubjectX500Principal().getName();
+
+        try {
+            LdapName ldapDN = new LdapName(dn);
+            for (Rdn rdn : ldapDN.getRdns()) {
+                if (rdn.getType().equalsIgnoreCase("CN")) {
+                    return rdn.getValue().toString();
+                }
+            }
+        } catch (InvalidNameException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
     }
 }
