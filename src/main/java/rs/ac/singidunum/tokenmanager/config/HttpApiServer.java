@@ -109,7 +109,7 @@ public class HttpApiServer {
 
                 byte[] IV = Base64.getDecoder().decode(headersIV);
                 System.out.println("IV length: " + IV.length);
-                byte[] encodedKeyBytes = Base64.getEncoder().encode(headersKeyId.getBytes(StandardCharsets.UTF_8));
+                byte[] encodedKeyBytes = Base64.getDecoder().decode(headerEnvelopeKey);
 
                 String pin = "1234";
 
