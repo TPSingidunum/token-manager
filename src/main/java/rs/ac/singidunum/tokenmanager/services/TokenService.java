@@ -17,17 +17,24 @@ import rs.ac.singidunum.tokenmanager.config.AppConfig;
 import rs.ac.singidunum.tokenmanager.entities.DnProperties;
 import rs.ac.singidunum.tokenmanager.entities.Token;
 
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import java.io.*;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -52,6 +59,10 @@ public class TokenService {
         }
     }
 
+    public Optional<Token> getTokenByKeyId(String keyId) {
+        return tokens.stream().filter(token -> token.getKeyId().equals(keyId)).findFirst();
+    }
+
     public List<Token> getTokens() {
         return tokens;
     }
@@ -71,7 +82,7 @@ public class TokenService {
     // @NotNull
     private void load(Path path) {
         Path certPath = path.resolve("cert.pem");
-        Path keyPath = path.resolve("key.pem");
+        Path keyPath = path.resolve("key.enc");
 
         if (Files.isReadable(certPath) && Files.isReadable(keyPath)) {
             X509Certificate cert = readCertificatePem(certPath);
@@ -79,16 +90,18 @@ public class TokenService {
             String keyId = path.getFileName().toString();
             Token token = new Token(keyId, name, Token.TOKEN_TYPE.LOCAL, certPath, keyPath);
             tokens.add(token);
+        } else {
+            System.out.println("Error while reading local tokens: " + path);
         }
     }
 
-    public Token generateLocalToken(String name) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, NoSuchProviderException {
+    public Token generateLocalToken(String name, String pin) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, NoSuchProviderException {
         String keyId = UUID.randomUUID().toString();
         Path tokenLocation = Path.of(appConfig.getProperty("storage.key.path")).resolve(keyId);
         Files.createDirectories(tokenLocation);
 
         Path certPath = tokenLocation.resolve("cert.pem");
-        Path keyPath = tokenLocation.resolve("key.pem");
+        Path keyPath = tokenLocation.resolve("key.enc");
 
         Token token = new Token(keyId, name, Token.TOKEN_TYPE.LOCAL, certPath, keyPath);
 
@@ -99,11 +112,72 @@ public class TokenService {
 
         X509Certificate tokenCert = generateCertificate(tokenKP, name);
         writePem(certPath, tokenCert);
-        writePem(keyPath, tokenKP.getPrivate());
+
+        byte[] encryptedKey = encryptPrivateKey(tokenKP.getPrivate(), pin);
+        Files.write(keyPath, encryptedKey);
 
         System.out.println("Token with params:  " + name + ". Has been successfully created");
 
         return token;
+    }
+
+    private byte[] encryptPrivateKey(PrivateKey privateKey, String pin) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] pinBytes = digest.digest(pin.getBytes(StandardCharsets.UTF_8));
+
+            byte[] IV = Arrays.copyOf(pinBytes, 16);
+            SecretKeySpec skc = new SecretKeySpec(Arrays.copyOfRange(pinBytes, 16, 32), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, skc, new IvParameterSpec(IV));
+
+            return cipher.doFinal(privateKey.getEncoded());
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
+                 InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public PrivateKey decryptPrivateKey(Token token, String pin) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] pinBytes = digest.digest(pin.getBytes(StandardCharsets.UTF_8));
+
+            byte[] IV = Arrays.copyOf(pinBytes, 16);
+            SecretKeySpec skc = new SecretKeySpec(Arrays.copyOfRange(pinBytes, 16, 32), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, skc, new IvParameterSpec(IV));
+
+            byte[] encodedKey = Files.readAllBytes(token.getKeyPath());
+            byte[] decryptedKey =  cipher.doFinal(encodedKey);
+
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decryptedKey);
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+
+            return kf.generatePrivate(keySpec);
+
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
+                 InvalidKeyException | IllegalBlockSizeException | BadPaddingException | IOException |
+                 InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public SecretKey decryptEnvelopeKey(byte[] envelopeKeyBytes, PrivateKey privateKey) {
+        try {
+            Cipher cipher = Cipher.getInstance("RSA", "BC");
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+
+            byte[] decryptedEnvelopeKeyBytes = cipher.doFinal(envelopeKeyBytes);
+            System.out.println("Decrypted envelope key: " + decryptedEnvelopeKeyBytes.length);
+            return new SecretKeySpec(decryptedEnvelopeKeyBytes, "AES");
+        } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException |
+                 InvalidKeyException | NoSuchProviderException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public X509Certificate generateCertificate(KeyPair kp, String name) throws NoSuchAlgorithmException, CertIOException, OperatorCreationException, CertificateException {

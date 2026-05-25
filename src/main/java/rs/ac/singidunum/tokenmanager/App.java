@@ -23,6 +23,7 @@ public class App extends Application {
 
         // Initialize TokenService
         TokenService tokenService = new TokenService(appConfig);
+        //tokenService.generateLocalToken("Teodor-New", "1234");
 
         // Start HTTP Server
         HttpApiServer server = new HttpApiServer(appConfig, tokenService);

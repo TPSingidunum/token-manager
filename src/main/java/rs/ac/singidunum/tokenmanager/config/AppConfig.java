@@ -13,11 +13,13 @@ public class AppConfig {
     public static final String STORAGE_KEY_PATH = "storage.key.path";
     public static final String TOKEN_DURATION = "token.key.duration";
     public static final String SERVER_PORT = "server.port";
+    public static final String BACKEND_URL = "backend.url";
 
     // Properties inital Values
     private static final String STORAGE_KEY_PATH_VALUE = "tokens";
     private static final int TOKEN_DURATION_VALUE = 365;
     private static final int SERVER_PORT_VALUE = 8000;
+    public static final String BACKEND_URL_VALUE = "http://localhost:8080";
 
     // Data
     private final Properties properties = new Properties();
@@ -53,6 +55,13 @@ public class AppConfig {
         properties.setProperty(STORAGE_KEY_PATH, STORAGE_KEY_PATH_VALUE);
         properties.setProperty(SERVER_PORT, String.valueOf(SERVER_PORT_VALUE));
         properties.setProperty(TOKEN_DURATION, String.valueOf(TOKEN_DURATION_VALUE));
+        properties.setProperty(BACKEND_URL, BACKEND_URL_VALUE);
+
+        try {
+            Files.createDirectories(Path.of(STORAGE_KEY_PATH_VALUE));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         saveConfig();
     }

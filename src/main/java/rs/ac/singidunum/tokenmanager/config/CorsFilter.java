@@ -16,6 +16,11 @@ public class CorsFilter extends Filter {
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
         exchange.getResponseHeaders().set("Access-Control-Max-Age", "86400");
 
+        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+            exchange.sendResponseHeaders(204, -1); // 204 No Content, -1 znači nema tela poruke
+            return;
+        }
+
         chain.doFilter(exchange);
     }
 
