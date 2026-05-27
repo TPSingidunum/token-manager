@@ -41,7 +41,7 @@ public class HttpApiServer {
 
     @FunctionalInterface
     public interface PinProvider {
-        String requestPin();
+        PrivateKey requestPin(Token token);
     }
 
     public HttpApiServer(AppConfig appConfig, TokenService tokenService, PinProvider pinProvider) {
@@ -118,14 +118,6 @@ public class HttpApiServer {
                 System.out.println("IV length: " + IV.length);
                 byte[] encodedKeyBytes = Base64.getDecoder().decode(headerEnvelopeKey);
 
-                //String pin = "1234";
-                String pin = pinProvider.requestPin();
-                if (pin == null || pin.isEmpty()) {
-                    ErrorResponse error = new ErrorResponse("Pin is wrong");
-                    sendResponseJson(he, 405, error.convertToJson());
-                    return;
-                }
-
                 Optional<Token> token = tokenService.getTokenByKeyId(headersKeyId);
                 if (token.isEmpty()) {
                     ErrorResponse error = new ErrorResponse("Token with keyId " + headersKeyId + " not found");
@@ -133,7 +125,8 @@ public class HttpApiServer {
                     return;
                 }
 
-                PrivateKey privateKey = tokenService.decryptPrivateKey(token.get(), pin);
+                PrivateKey privateKey = pinProvider.requestPin(token.get());
+
                 SecretKey key = tokenService.decryptEnvelopeKey(encodedKeyBytes, privateKey);
                 System.out.println("Secret key: " + key.getEncoded().length);
 

@@ -8,14 +8,15 @@ import javafx.stage.Stage;
 import org.bouncycastle.operator.OperatorCreationException;
 import rs.ac.singidunum.tokenmanager.config.AppConfig;
 import rs.ac.singidunum.tokenmanager.config.HttpApiServer;
+import rs.ac.singidunum.tokenmanager.entities.Token;
 import rs.ac.singidunum.tokenmanager.services.TokenService;
 import rs.ac.singidunum.tokenmanager.ui.PinDialog;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.cert.CertificateException;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -28,10 +29,9 @@ public class App extends Application {
 
         // Initialize TokenService
         TokenService tokenService = new TokenService(appConfig);
-        //tokenService.generateLocalToken("Teodor-New", "1234");
 
         // Start HTTP Server
-        HttpApiServer server = new HttpApiServer(appConfig, tokenService, () -> requestPin(stage));
+        HttpApiServer server = new HttpApiServer(appConfig, tokenService, (token) -> requestPin(stage, token));
         server.start();
 
         // Building the UI and Display
@@ -46,15 +46,15 @@ public class App extends Application {
         stage.show();
     }
 
-    private String requestPin(Stage owner) {
+    private PrivateKey requestPin(Stage owner, Token token) {
         if (Platform.isFxApplicationThread()) {
-            return new PinDialog(owner).showAndGet().orElse(null);
+            return new PinDialog(owner, token).showAndGet().orElse(null);
         }
 
 
-        CompletableFuture<String> pinFuture = new CompletableFuture<>();
+        CompletableFuture<PrivateKey> pinFuture = new CompletableFuture<>();
         Platform.runLater(() -> {
-            pinFuture.complete(new PinDialog(owner).showAndGet().orElse(null));
+            pinFuture.complete(new PinDialog(owner, token).showAndGet().orElse(null));
         });
 
         try {
