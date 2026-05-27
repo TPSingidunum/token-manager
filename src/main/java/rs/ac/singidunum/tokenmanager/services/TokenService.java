@@ -67,7 +67,7 @@ public class TokenService {
         return tokens;
     }
 
-    private void loadLocalTokens() {
+    public void loadLocalTokens() {
         Path localTokenLocation = Path.of(appConfig.getProperty("storage.key.path"));
 
         try (var dirs = Files.list(localTokenLocation)) {
@@ -95,7 +95,7 @@ public class TokenService {
         }
     }
 
-    public Token generateLocalToken(String name, String pin) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, NoSuchProviderException {
+    public Token generateLocalToken(String name, String pin, SecureRandom secure) throws CertificateException, NoSuchAlgorithmException, OperatorCreationException, IOException, NoSuchProviderException {
         String keyId = UUID.randomUUID().toString();
         Path tokenLocation = Path.of(appConfig.getProperty("storage.key.path")).resolve(keyId);
         Files.createDirectories(tokenLocation);
@@ -107,7 +107,7 @@ public class TokenService {
 
         // tokens / KeyID / certs
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
-        kpg.initialize(4096);
+        kpg.initialize(4096, secure);
         KeyPair tokenKP = kpg.generateKeyPair();
 
         X509Certificate tokenCert = generateCertificate(tokenKP, name);
@@ -117,6 +117,7 @@ public class TokenService {
         Files.write(keyPath, encryptedKey);
 
         System.out.println("Token with params:  " + name + ". Has been successfully created");
+        loadLocalTokens();
 
         return token;
     }
