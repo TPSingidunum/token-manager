@@ -13,7 +13,8 @@ public class CorsFilter extends Filter {
         // 1. Dodavanje CORS zaglavlja za apsolutno svaki zahtev
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "http://localhost:5173");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Disposition");
+        exchange.getResponseHeaders().set("Access-Control-Expose-Headers", "Content-Disposition");
         exchange.getResponseHeaders().set("Access-Control-Max-Age", "86400");
 
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
