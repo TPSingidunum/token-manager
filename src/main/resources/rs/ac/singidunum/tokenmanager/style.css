@@ -1,0 +1,589 @@
+/* ============================================================
+   style.css — structural styles using CSS lookup-color variables.
+   Color variables are defined (and overridden) by the theme files.
+   ============================================================ */
+
+/* ── Root / global ─────────────────────────────────────────── */
+.root {
+    -fx-font-family: "Segoe UI", "JetBrains Mono", sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: tm-bg-primary;
+}
+
+/* ── Main window ────────────────────────────────────────────── */
+.root-pane {
+    -fx-background-color: tm-bg-primary;
+    /* 1 px border so the frameless window is visually distinct from the desktop */
+    -fx-border-color: tm-border;
+    -fx-border-width: 1;
+}
+
+.header-bar {
+    -fx-background-color: tm-bg-card;
+    -fx-border-color: transparent transparent tm-border transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-min-height: 46;
+    -fx-pref-height: 46;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 2);
+}
+
+.app-title {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+/* ── Tab pane ───────────────────────────────────────────────── */
+.main-tabs {
+    -fx-background-color: tm-bg-primary;
+    -fx-tab-min-height: 36;
+}
+
+.main-tabs .tab-header-background {
+    -fx-background-color: tm-bg-card;
+    -fx-border-color: transparent transparent tm-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.main-tabs .tab {
+    -fx-background-color: transparent;
+    -fx-padding: 6 18;
+    /* kill the dotted focus rectangle JavaFX draws around selected tabs */
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.main-tabs .tab:selected {
+    -fx-background-color: tm-tab-selected;
+    -fx-border-color: tm-accent transparent transparent transparent;
+    -fx-border-width: 2 0 0 0;
+}
+
+.main-tabs .tab .tab-label {
+    -fx-text-fill: tm-text-secondary;
+    -fx-font-size: 13px;
+}
+
+.main-tabs .tab:selected .tab-label {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-weight: bold;
+}
+
+.main-tabs .tab-header-area .headers-region .tab:hover {
+    -fx-background-color: tm-btn-secondary;
+}
+
+/* ── Content pane ───────────────────────────────────────────── */
+.content-pane {
+    -fx-background-color: tm-bg-primary;
+}
+
+.section-title {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.separator .line {
+    -fx-border-color: tm-border;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ── Token list view ────────────────────────────────────────── */
+.list-view {
+    -fx-background-color: tm-bg-surface;
+    -fx-control-inner-background: tm-bg-surface;
+    -fx-border-color: tm-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 4;
+}
+
+.list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: tm-list-text;
+    -fx-padding: 10 14;
+    -fx-font-size: 13px;
+}
+
+.list-view .list-cell:filled:hover {
+    -fx-background-color: tm-list-hover;
+    -fx-background-radius: 6;
+}
+
+.list-view .list-cell:filled:selected {
+    -fx-background-color: tm-list-selected;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+}
+
+.token-name {
+    -fx-font-weight: bold;
+    -fx-text-fill: tm-text-primary;
+}
+
+.token-source {
+    -fx-text-fill: tm-text-secondary;
+    -fx-font-size: 12px;
+}
+
+.token-state {
+    -fx-font-size: 11px;
+    -fx-padding: 2 6;
+    -fx-background-radius: 10;
+}
+
+.token-state-online {
+    -fx-background-color: tm-btn-secondary;
+    -fx-text-fill: tm-text-primary;
+}
+
+.token-state-offline {
+    -fx-background-color: tm-danger;
+    -fx-text-fill: white;
+}
+
+.token-badge {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 8;
+    -fx-background-radius: 10;
+}
+
+.token-badge-local {
+    -fx-background-color: tm-btn-secondary;
+    -fx-text-fill: tm-text-primary;
+}
+
+.token-badge-device {
+    -fx-background-color: tm-accent;
+    -fx-text-fill: white;
+}
+
+.token-badge-offline {
+    -fx-background-color: tm-danger;
+    -fx-text-fill: white;
+}
+
+/* ── Token context menu ─────────────────────────────────────── */
+.token-context-menu {
+    /* Two-layer background removes the square artifact behind rounded corners. */
+    -fx-background-color: transparent, tm-bg-card;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 8, 7;
+    -fx-border-color: tm-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-border-insets: 0;
+    -fx-padding: 4;
+}
+
+.token-context-menu .menu-item {
+    -fx-padding: 8 12;
+    -fx-background-radius: 6;
+    -fx-background-insets: 0;
+}
+
+.token-context-menu .menu-item .label {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-size: 13px;
+}
+
+.token-context-menu .menu-item:focused {
+    -fx-background-color: tm-list-hover;
+}
+
+.token-context-menu .menu-item.token-context-danger .label {
+    -fx-text-fill: tm-danger;
+    -fx-font-weight: bold;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.button {
+    -fx-text-fill: tm-text-primary;
+    -fx-background-radius: 8;
+    -fx-padding: 7 16;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-border-width: 0;
+}
+
+.action-btn {
+    -fx-background-color: tm-accent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.action-btn:hover   { -fx-background-color: tm-accent-hover; }
+.action-btn:pressed { -fx-background-color: tm-accent-hover; -fx-opacity: 0.85; }
+
+.secondary-btn {
+    -fx-background-color: tm-btn-secondary;
+}
+.secondary-btn:hover { -fx-background-color: tm-btn-secondary-hover; }
+
+.theme-toggle-btn {
+    -fx-background-color: tm-btn-secondary;
+    -fx-background-radius: 20;
+    -fx-padding: 6 14;
+    -fx-font-size: 12px;
+}
+.theme-toggle-btn:hover { -fx-background-color: tm-btn-secondary-hover; }
+
+/* ── Text fields / password fields ──────────────────────────── */
+.text-field, .password-field {
+    -fx-background-color: tm-bg-input;
+    -fx-border-color: tm-input-border;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+    -fx-text-fill: tm-text-primary;
+    -fx-prompt-text-fill: tm-text-muted;
+    -fx-padding: 7 10;
+    -fx-font-size: 13px;
+}
+.text-field:focused, .password-field:focused {
+    -fx-border-color: tm-accent;
+    -fx-border-width: 1.5;
+}
+
+/* ── ComboBox ───────────────────────────────────────────────── */
+.combo-box {
+    -fx-background-color: tm-bg-input;
+    -fx-border-color: tm-input-border;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+    -fx-text-fill: tm-text-primary;
+}
+.combo-box:focused { -fx-border-color: tm-accent; }
+.combo-box .list-cell { -fx-text-fill: tm-text-primary; -fx-background-color: transparent; }
+.combo-box-popup .list-view { -fx-background-color: tm-bg-card; -fx-border-color: tm-border; }
+.combo-box-popup .list-cell:filled:selected { -fx-background-color: tm-accent; -fx-text-fill: white; }
+
+/* ── Labels ─────────────────────────────────────────────────── */
+.label {
+    -fx-text-fill: tm-text-primary;
+}
+.dialog-label {
+    -fx-text-fill: tm-text-secondary;
+    -fx-font-size: 13px;
+}
+.error-label {
+    -fx-text-fill: tm-danger;
+    -fx-font-size: 12px;
+}
+
+/* ── About tab ──────────────────────────────────────────────── */
+.about-title {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+.about-subtitle {
+    -fx-text-fill: tm-text-secondary;
+    -fx-font-size: 13px;
+}
+
+/* ── Progress bar (entropy stage) ───────────────────────────── */
+.progress-bar > .track { -fx-background-color: tm-btn-secondary; -fx-background-radius: 4; }
+.progress-bar > .bar   { -fx-background-color: tm-accent; -fx-background-radius: 4; -fx-background-insets: 0; }
+
+/* ── Entropy screen label ───────────────────────────────────── */
+.entropy-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: tm-text-primary;
+    -fx-padding: 0 0 8 0;
+}
+
+/* ── Window control buttons ─────────────────────────────────── */
+.window-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: tm-text-secondary;
+    -fx-font-size: 19px;
+    -fx-font-family: "Segoe UI Symbol", "Segoe UI", sans-serif;
+    -fx-padding: 0 0 1 0;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-insets: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 0;
+    -fx-min-width: 46;
+    -fx-pref-width: 46;
+    -fx-min-height: 46;
+    -fx-pref-height: 46;
+    -fx-alignment: CENTER;
+    -fx-content-display: CENTER;
+    /* kill focus ring so the close button doesn't look different
+       after it has been clicked and retains keyboard focus */
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.window-btn:hover {
+    -fx-background-color: tm-btn-secondary;
+    -fx-text-fill: tm-text-primary;
+}
+/* explicit focused state: keep same as normal so it doesn't stand out */
+.window-btn:focused {
+    -fx-background-color: transparent;
+    -fx-text-fill: tm-text-secondary;
+}
+.window-close-btn:hover {
+    -fx-background-color: tm-btn-secondary;
+    -fx-text-fill: tm-text-primary;
+}
+.window-close-btn:focused {
+    -fx-background-color: transparent;
+    -fx-text-fill: tm-text-secondary;
+}
+.window-btn:armed {
+    -fx-background-color: tm-btn-secondary-hover;
+}
+
+/* ── Custom popup windows (undecorated stages) ─────────────── */
+.popup-root {
+    -fx-background-color: tm-bg-card;
+    -fx-border-color: tm-border;
+    -fx-border-width: 1;
+}
+
+.popup-header {
+    -fx-background-color: tm-bg-surface;
+    -fx-border-color: transparent transparent tm-border transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-min-height: 42;
+    -fx-pref-height: 42;
+    -fx-padding: 0 0 0 14;
+}
+
+.popup-title {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.popup-close-btn {
+    -fx-min-width: 42;
+    -fx-pref-width: 42;
+    -fx-min-height: 42;
+    -fx-pref-height: 42;
+}
+
+.popup-body {
+    -fx-background-color: tm-bg-card;
+}
+
+.popup-scroll {
+    -fx-background-color: transparent;
+    -fx-fit-to-width: true;
+}
+
+.popup-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.popup-footer {
+    -fx-background-color: tm-bg-card;
+    -fx-border-color: tm-border transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.tray-panel {
+    -fx-background-color: tm-bg-card;
+    -fx-border-color: tm-border;
+    -fx-border-width: 1;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.30), 16, 0.2, 0, 6);
+}
+
+.tray-header {
+    -fx-min-height: 28;
+    -fx-pref-height: 28;
+    -fx-padding: 0;
+}
+
+.tray-title {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.tray-subtitle {
+    -fx-text-fill: tm-text-secondary;
+    -fx-font-size: 11px;
+    -fx-padding: 0 0 4 0;
+}
+
+.tray-btn {
+    -fx-max-width: infinity;
+    -fx-pref-width: 220;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 7 11;
+}
+
+.tray-close-btn {
+    -fx-min-width: 28;
+    -fx-pref-width: 28;
+    -fx-min-height: 28;
+    -fx-pref-height: 28;
+    -fx-font-size: 14px;
+}
+
+/* ── Dialog pane ────────────────────────────────────────────── */
+/*
+ * Dialogs run inside a regular OS window (title bar etc.), so we must
+ * NOT use border-radius on the pane — the rounded corners would float
+ * visibly against the rectangular OS window background.
+ * The theme colours + button-bar divider are enough to make it look great.
+ */
+.dialog-pane, .app-dialog-pane {
+    -fx-background-color: tm-bg-card;
+    -fx-padding: 0;
+    -fx-effect: none;
+}
+
+/* Header panel — only shown when setHeaderText() is called */
+.dialog-pane > .header-panel,
+.app-dialog-pane > .header-panel {
+    -fx-background-color: tm-bg-card;
+    -fx-padding: 14 16 12 16;
+    -fx-border-color: transparent transparent tm-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+.dialog-pane > .header-panel .label,
+.app-dialog-pane > .header-panel .label {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Graphic container (shown when setGraphic() is called, otherwise 0-height) */
+.dialog-pane > .graphic-container,
+.app-dialog-pane > .graphic-container {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Content region — let the dialog subclass control its own padding */
+.dialog-pane > .content, .app-dialog-pane > .content {
+    -fx-background-color: tm-bg-card;
+    -fx-padding: 0;
+}
+
+/* Button bar at the bottom */
+.dialog-pane > .button-bar > .container,
+.app-dialog-pane > .button-bar > .container {
+    -fx-background-color: tm-bg-surface;
+    -fx-border-color: tm-border transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 10 16;
+}
+
+.dialog-pane .button, .app-dialog-pane .button {
+    -fx-background-radius: 7;
+    -fx-padding: 7 18;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.dialog-pane .button:default, .app-dialog-pane .button:default {
+    -fx-background-color: tm-accent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.dialog-pane .button:default:hover, .app-dialog-pane .button:default:hover {
+    -fx-background-color: tm-accent-hover;
+}
+.dialog-pane .button:cancel,
+.app-dialog-pane .button:cancel {
+    -fx-background-color: tm-btn-secondary;
+}
+.dialog-pane .button:cancel:hover,
+.app-dialog-pane .button:cancel:hover {
+    -fx-background-color: tm-btn-secondary-hover;
+}
+
+/* ── Notification dialog ────────────────────────────────────── */
+.notification-icon {
+    -fx-font-size: 30px;
+    -fx-min-width: 44;
+}
+.notification-icon-info    { -fx-text-fill: tm-accent; }
+.notification-icon-success { -fx-text-fill: tm-success; }
+.notification-icon-error   { -fx-text-fill: tm-danger; }
+.notification-icon-warning { -fx-text-fill: tm-warning; }
+
+.notification-title {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+.notification-message {
+    -fx-text-fill: tm-text-secondary;
+    -fx-font-size: 13px;
+}
+
+/* ── Token info window ──────────────────────────────────────── */
+.token-info-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: tm-text-primary;
+}
+
+.token-info-subtitle {
+    -fx-text-fill: tm-text-secondary;
+    -fx-font-size: 12px;
+}
+
+.token-info-card {
+    -fx-background-color: tm-bg-surface;
+    -fx-border-color: tm-border;
+    -fx-border-width: 1;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 10 12;
+}
+
+.token-info-section {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.token-info-row {
+    -fx-padding: 2 0;
+}
+
+.token-info-key {
+    -fx-min-width: 90;
+    -fx-text-fill: tm-text-secondary;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.token-info-value {
+    -fx-text-fill: tm-text-primary;
+    -fx-font-size: 12px;
+}
+
+.cert-data-area {
+    -fx-font-family: "JetBrains Mono", "Consolas", monospace;
+    -fx-font-size: 12px;
+}
+
+/* ── Scroll bar ─────────────────────────────────────────────── */
+.scroll-bar { -fx-background-color: transparent; }
+.scroll-bar .track { -fx-background-color: transparent; }
+.scroll-bar .thumb { -fx-background-color: tm-btn-secondary; -fx-background-radius: 4; }
+.scroll-bar .thumb:hover { -fx-background-color: tm-btn-secondary-hover; }
+.increment-button, .decrement-button { -fx-background-color: transparent; -fx-padding: 0; }
+.increment-arrow, .decrement-arrow { -fx-shape: " "; -fx-padding: 0; }
+
+
+
+
+
+
+
+
+

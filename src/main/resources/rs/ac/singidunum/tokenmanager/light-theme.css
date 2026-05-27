@@ -1,0 +1,38 @@
+/* ============================================================
+   light-theme.css — light palette
+   These CSS lookup-color variables override the dark defaults
+   ============================================================ */
+.root {
+    /* Backgrounds */
+    tm-bg-primary:  #f1f5f9;
+    tm-bg-card:     #ffffff;
+    tm-bg-surface:  #f8fafc;
+    tm-bg-input:    #ffffff;
+    tm-tab-selected: #ffffff;
+
+    /* Text */
+    tm-text-primary:   #0f172a;
+    tm-text-secondary: #475569;
+    tm-text-muted:     #94a3b8;
+
+    /* Accent (same blue, works on both) */
+    tm-accent:       #2563eb;
+    tm-accent-hover: #1d4ed8;
+
+    /* Semantic */
+    tm-danger:  #dc2626;
+    tm-success: #16a34a;
+    tm-warning: #d97706;
+
+    /* Borders / chrome */
+    tm-border:             #e2e8f0;
+    tm-input-border:       #cbd5e1;
+    tm-btn-secondary:      #e2e8f0;
+    tm-btn-secondary-hover:#cbd5e1;
+
+    /* List */
+    tm-list-text:     #1e293b;
+    tm-list-hover:    #dbeafe;
+    tm-list-selected: #2563eb;
+}
+

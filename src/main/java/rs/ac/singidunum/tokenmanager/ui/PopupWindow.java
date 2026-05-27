@@ -27,7 +27,8 @@ public abstract class PopupWindow<T> {
     private double dragOffsetY;
 
     protected PopupWindow(Stage owner, String title, double width, double height) {
-        stage = new Stage(StageStyle.UNDECORATED);
+        //stage = new Stage(StageStyle.UNDECORATED);
+        stage = new Stage();
         stage.initModality(Modality.WINDOW_MODAL);
         if (owner != null) {
             stage.initOwner(owner);

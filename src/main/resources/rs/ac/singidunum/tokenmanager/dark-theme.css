@@ -1,0 +1,38 @@
+/* ============================================================
+   dark-theme.css — dark palette (default)
+   These CSS lookup-color variables are referenced by style.css
+   ============================================================ */
+.root {
+    /* Backgrounds */
+    tm-bg-primary:  #0f172a;
+    tm-bg-card:     #1e293b;
+    tm-bg-surface:  #111827;
+    tm-bg-input:    #0b1120;
+    tm-tab-selected: #1e293b;
+
+    /* Text */
+    tm-text-primary:   #f1f5f9;
+    tm-text-secondary: #94a3b8;
+    tm-text-muted:     #64748b;
+
+    /* Accent */
+    tm-accent:       #3b82f6;
+    tm-accent-hover: #2563eb;
+
+    /* Semantic */
+    tm-danger:  #ef4444;
+    tm-success: #22c55e;
+    tm-warning: #f59e0b;
+
+    /* Borders / chrome */
+    tm-border:             #334155;
+    tm-input-border:       #475569;
+    tm-btn-secondary:      #1e293b;
+    tm-btn-secondary-hover:#334155;
+
+    /* List */
+    tm-list-text:     #dbeafe;
+    tm-list-hover:    #1e3a5f;
+    tm-list-selected: #2563eb;
+}
+

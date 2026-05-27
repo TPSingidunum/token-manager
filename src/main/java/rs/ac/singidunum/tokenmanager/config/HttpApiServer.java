@@ -37,10 +37,17 @@ public class HttpApiServer {
     private TokenService tokenService;
     private HttpServer server;
     private CorsFilter corsFilter;
+    private PinProvider pinProvider;
 
-    public HttpApiServer(AppConfig appConfig, TokenService tokenService) {
+    @FunctionalInterface
+    public interface PinProvider {
+        String requestPin();
+    }
+
+    public HttpApiServer(AppConfig appConfig, TokenService tokenService, PinProvider pinProvider) {
         this.appConfig = appConfig;
         this.tokenService = tokenService;
+        this.pinProvider = pinProvider;
     }
 
     public void start() {
@@ -111,7 +118,13 @@ public class HttpApiServer {
                 System.out.println("IV length: " + IV.length);
                 byte[] encodedKeyBytes = Base64.getDecoder().decode(headerEnvelopeKey);
 
-                String pin = "1234";
+                //String pin = "1234";
+                String pin = pinProvider.requestPin();
+                if (pin == null || pin.isEmpty()) {
+                    ErrorResponse error = new ErrorResponse("Pin is wrong");
+                    sendResponseJson(he, 405, error.convertToJson());
+                    return;
+                }
 
                 Optional<Token> token = tokenService.getTokenByKeyId(headersKeyId);
                 if (token.isEmpty()) {
